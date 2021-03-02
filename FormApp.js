@@ -1,24 +1,26 @@
 import { StatusBar } from 'expo-status-bar';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import Database from './Database';
 
-export default function FormApp({navigation}) {
-    
+export default function FormApp({route, navigation}) {
+     const id = route.params ? route.params.id : undefined;
     const [descricao, setDescricao] = useState(''); 
     const [quantidade, setQuantidade] = useState('');
+    useEffect(() => {
+        if(!route.params) return;
+        setDescricao(route.params.descricao);
+        setQuantidade(route.params.quantidade.toString());
+      }, [route])
  
     function handleDescriptionChange(descricao){ setDescricao(descricao); } 
     function handleQuantityChange(quantidade){ setQuantidade(quantidade); }
     async function handleButtonPress(){
-        const listItem = {id: new Date().getTime(), descricao, quantidade: parseInt(quantidade)};
-        let savedItems = [];
-        const response = await AsyncStorage.getItem('items');
-        if(response) savedItems = JSON.parse(response);
-        savedItems.push(listItem);
-        await AsyncStorage.setItem('items', JSON.stringify(savedItems));
-        navigation.navigate("AppList");
-    }    
+        const listItem = {descricao, quantidade: parseInt(quantidade)};
+        Database.saveItem(listItem)
+        .then(response => navigation.navigate("AppList", listItem));
+    }
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Item para comprar</Text>
@@ -28,6 +30,7 @@ export default function FormApp({navigation}) {
                     onChangeText={handleDescriptionChange}
                     placeholder="O Que está faltando em casa?"
                     clearButtonMode="always"
+                    value={descricao}
                 >
                 </TextInput>
                 <TextInput
@@ -36,6 +39,7 @@ export default function FormApp({navigation}) {
                     onChangeText={handleQuantityChange}
                     keyboardType="numeric"
                     clearButtonMode="always"
+                    value={quantidade.toString()}
                 ></TextInput>
                 <TouchableOpacity style={styles.button} onPress={handleButtonPress}>
                     <Text style={styles.buttonText}>Salvar</Text>
