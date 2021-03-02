@@ -1,43 +1,50 @@
-import { NavigationHelpersContext } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
-export default function FormApp() {
-    const {descricao, setDescricao} = useState();
-    const {quantidade, setQuantidade} = useState();
-    function handlerDescriptionChange(descricao){setDescricao(descricao);}
-    function handlerQuantityChange(quantidade){setQuantidade(quantidade);}
-    function handlerButtonPress(){
-        console.log({id: new Date().getTime(), descricao, quantidade});
-        Navigation.navigate("AppList");
+export default function FormApp({navigation}) {
+    
+    const [descricao, setDescricao] = useState(''); 
+    const [quantidade, setQuantidade] = useState('');
+ 
+    function handleDescriptionChange(descricao){ setDescricao(descricao); } 
+    function handleQuantityChange(quantidade){ setQuantidade(quantidade); }
+    async function handleButtonPress(){
+        const listItem = {id: new Date().getTime(), descricao, quantidade: parseInt(quantidade)};
+        let savedItems = [];
+        const response = await AsyncStorage.getItem('items');
+        if(response) savedItems = JSON.parse(response);
+        savedItems.push(listItem);
+        await AsyncStorage.setItem('items', JSON.stringify(savedItems));
+        navigation.navigate("AppList");
     }    
-  return (
-    <View style={styles.container}>
-        <Text style={styles.title}>Item para comprar</Text>
-        <View style={styles.inputContainer}>
-            <TextInput
-                style={styles.input}
-                onChangeText={handlerDescriptionChange}
-                placeholder="O Que está faltando em casa?"
-                clearButtonMode="always"
-            >
-            </TextInput>
-            <TextInput
-                style={styles.input}
-                placeholder="Digite a quantidade"
-                onChangeText={handlerQuantityChange}
-                keyboardType="numeric"
-                clearButtonMode="always"
-            ></TextInput>
-            <TouchableOpacity style={styles.button} onPress={handlerButtonPress}>
-                <Text style={styles.buttonText}>Salvar</Text>
-            </TouchableOpacity>
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>Item para comprar</Text>
+            <View style={styles.inputContainer}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={handleDescriptionChange}
+                    placeholder="O Que está faltando em casa?"
+                    clearButtonMode="always"
+                >
+                </TextInput>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Digite a quantidade"
+                    onChangeText={handleQuantityChange}
+                    keyboardType="numeric"
+                    clearButtonMode="always"
+                ></TextInput>
+                <TouchableOpacity style={styles.button} onPress={handleButtonPress}>
+                    <Text style={styles.buttonText}>Salvar</Text>
+                </TouchableOpacity>
 
+            </View>
+            <StatusBar style="auto" />
         </View>
-        <StatusBar style="auto" />
-    </View>
-  );
+    );
 }
 
 const styles = StyleSheet.create({
