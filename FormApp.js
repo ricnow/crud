@@ -1,13 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import AppTab from './AppTab';
-
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <AppTab />
+      <Text>Form!</Text>
       <StatusBar style="light" />
     </View>
   );
@@ -16,7 +14,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#D93600',
     alignItems: 'center',
     justifyContent: 'center',
   },
