@@ -1,25 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
-import React, {useState} from 'react';
-import { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import React, {useState, useEffect} from 'react';
+import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import AppItem from './AppItem';
 import Database from './Database';
 
-export default function AppList({route, navigation}) {
-       const [items, setItems] = useState([]);
-       useEffect(() =>  {
-           Database.getItems().then(items => setItems(items))
-       }, [route]);  
+export default function AppList({ route, navigation }) {
+    const [items, setItems] = useState([]);
+    useEffect(() => {
+           Database.getItems().then(items => setItems(items));
+        }, [route]); 
     return (
         <View style={styles.container}>
-            <StatusBar style="light" />
-            <Text style={styles.title}>Lista de Compras</Text>
-            <ScrollView 
-                style={styles.scrollContainer}
-                contentContainerStyle={styles.itemsContainer}>
+        <StatusBar style="light" />
+        <Text style={styles.title}>Lista de Compras</Text>
+        <ScrollView 
+            style={styles.scrollContainer}
+            contentContainerStyle={styles.itemsContainer}>
                 { items.map(item => {
-                    return <AppItem key={item.id} id={item.id} item={item.quantidade + '  de ' + item.descricao} />
+                    return <AppItem key={item.id} id={item.id} item={item.quantidade + '  de ' + item.descricao} navigation={navigation} />
                 }) 
                 }
             </ScrollView>
